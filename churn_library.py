@@ -7,8 +7,14 @@ This module predicts customer who are likely to churn based on the input feature
 import os
 import pandas as pd
 import matplotlib.pyplot as plt
-import seaborn as sns 
+import seaborn as sns
 from sklearn.model_selection import train_test_split
+from sklearn.linear_model import LogisticRegression
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.model_selection import GridSearchCV
+from sklearn.metrics import classification_report
+import numpy as np
+import joblib
 sns.set()
 os.environ['QT_QPA_PLATFORM'] = 'offscreen'
 
@@ -37,7 +43,8 @@ def perform_eda(data_frame):
     output:
             None
     '''
-    column_names_list = ["Churn", "Customer_Age","Marital_Status","Total_Trans_Ct","heat_map"]
+    column_names_list = ["Churn", "Customer_Age",
+                         "Marital_Status", "Total_Trans_Ct", "heat_map"]
     for column in column_names_list:
         plt.figure(figsize=(20, 10))
         if column == "Churn":
@@ -45,11 +52,14 @@ def perform_eda(data_frame):
         elif column == "Customer_Age":
             data_frame["Customer_Age"].hist()
         elif column == "Marital_Status":
-            data_frame.Marital_Status.value_counts('normalize').plot(kind='bar')
+            data_frame.Marital_Status.value_counts(
+                'normalize').plot(kind='bar')
         elif column == "Total_Trans_Ct":
-            sns.histplot(data_frame['Total_Trans_Ct'], stat='density', kde=True)
+            sns.histplot(data_frame['Total_Trans_Ct'],
+                         stat='density', kde=True)
         elif column == "heat_map":
-            sns.heatmap(data_frame.corr(), annot=False, cmap='Dark2_r', linewidths = 2)
+            sns.heatmap(data_frame.corr(), annot=False,
+                        cmap='Dark2_r', linewidths=2)
         plt.savefig("images/eda/" + column + ".jpg")
         plt.close()
 
@@ -69,13 +79,14 @@ def encoder_helper(data_frame, category_lst):
             df: pandas dataframe with new columns for
     '''
     for cat_feature in category_lst:
-        cat_feature_churn= cat_feature+"_Churn"
-        cat_feature_list =[]
-        cat_feature_groups =data_frame.groupby(cat_feature).mean()['Churn']
+        cat_feature_churn = cat_feature+"_Churn"
+        cat_feature_list = []
+        cat_feature_groups = data_frame.groupby(cat_feature).mean()['Churn']
         for val in data_frame[cat_feature]:
             cat_feature_list.append(cat_feature_groups.loc[val])
-        data_frame[cat_feature_churn]=cat_feature_list
+        data_frame[cat_feature_churn] = cat_feature_list
     return data_frame
+
 
 def perform_feature_engineering(data_frame):
     '''
@@ -90,18 +101,18 @@ def perform_feature_engineering(data_frame):
               y_train: y training data
               y_test: y testing data
     '''
-    y_target=data_frame["Churn"]
-    x_features=pd.DataFrame()
+    y_target = data_frame["Churn"]
+    x_features = pd.DataFrame()
     keep_cols = ['Customer_Age', 'Dependent_count', 'Months_on_book',
-             'Total_Relationship_Count', 'Months_Inactive_12_mon',
-             'Contacts_Count_12_mon', 'Credit_Limit', 'Total_Revolving_Bal',
-             'Avg_Open_To_Buy', 'Total_Amt_Chng_Q4_Q1', 'Total_Trans_Amt',
-             'Total_Trans_Ct', 'Total_Ct_Chng_Q4_Q1', 'Avg_Utilization_Ratio',
-             'Gender_Churn', 'Education_Level_Churn', 'Marital_Status_Churn', 
-             'Income_Category_Churn', 'Card_Category_Churn']
-    x_features[keep_cols]= data_frame[keep_cols]
-    x_train, x_test, y_train, y_test = train_test_split(x_features, 
-                                                        y_target, test_size= 0.3, random_state=42)
+                 'Total_Relationship_Count', 'Months_Inactive_12_mon',
+                 'Contacts_Count_12_mon', 'Credit_Limit', 'Total_Revolving_Bal',
+                 'Avg_Open_To_Buy', 'Total_Amt_Chng_Q4_Q1', 'Total_Trans_Amt',
+                 'Total_Trans_Ct', 'Total_Ct_Chng_Q4_Q1', 'Avg_Utilization_Ratio',
+                 'Gender_Churn', 'Education_Level_Churn', 'Marital_Status_Churn',
+                 'Income_Category_Churn', 'Card_Category_Churn']
+    x_features[keep_cols] = data_frame[keep_cols]
+    x_train, x_test, y_train, y_test = train_test_split(
+        x_features, y_target, test_size=0.3, random_state=42)
     return x_train, x_test, y_train, y_test
 
 
@@ -125,7 +136,30 @@ def classification_report_image(y_train,
     output:
              None
     '''
-    pass
+    data = dict()
+    data["train_rf"] = ["train_results_random_forest_classifier",
+                        y_train, y_train_preds_rf]
+    data["test_rf"] = [
+        "test_results_random_forest_classifier", y_test, y_test_preds_rf]
+    data["train_lr"] = ["train_results_logistic_regression",
+                        y_train, y_train_preds_lr]
+    data["test_lr"] = ["test_results_logistic_regression", y_test, y_test_preds_lr]
+    for result_title, results_data in data.items():
+        # Set the default size of figures to [7,7]
+        plt.rc("figure", figsize=(7, 7))
+        # print the title
+        plt.text(0.01, 1.25, str(results_data[0]), {
+                 "fontsize": 10}, fontproperties="monospace")
+        # print the classificaiton results
+        plt.text(
+            0.01, 0.05, str(
+                classification_report(
+                    results_data[1], results_data[2])), {
+                "fontsize": 10}, fontproperties="monospace")
+        plt.axis("off")
+        # plt.savefig("images/results/%s.jpg" % title)
+        plt.savefig("images/results/" + result_title + ".jpg")
+        plt.close()
 
 
 def feature_importance_plot(model, X_data, output_pth):
@@ -139,10 +173,25 @@ def feature_importance_plot(model, X_data, output_pth):
     output:
              None
     '''
-    pass
+    importances = model.best_estimator_.feature_importances_
+    # Sort feature importances in descending order
+    indices = np.argsort(importances)[::-1]
+    # Rearrange feature names so they match the sorted feature importances
+    names = [X_data.columns[i] for i in indices]
+    # Create plot
+    plt.figure(figsize=(20, 5))
+    # Create plot title
+    plt.title("Feature Importance")
+    plt.ylabel('Importance')
+    # Add bars
+    plt.bar(range(X_data.shape[1]), importances[indices])
+    # Add feature names as x-axis labels
+    plt.xticks(range(X_data.shape[1]), names, rotation=90)
+    plt.savefig(output_pth + "Feature_Importance.jpg")
+    plt.close()
 
 
-def train_models(X_train, X_test, y_train, y_test):
+def train_models(x_train, x_test, y_train, y_test):
     '''
     train, store model results: images + scores, and store models
     input:
@@ -153,24 +202,52 @@ def train_models(X_train, X_test, y_train, y_test):
     output:
               None
     '''
-    pass
+    rfc = RandomForestClassifier(random_state=42)
+    lrc = LogisticRegression(solver='lbfgs', max_iter=3000)
+    param_grid = {'n_estimators': [200, 500],
+                  'max_features': ['auto', 'sqrt'],
+                  'max_depth': [4, 5, 100],
+                  'criterion': ['gini', 'entropy']}
+    cv_rfc = GridSearchCV(estimator=rfc, param_grid=param_grid, cv=5)
+    cv_rfc.fit(x_train, y_train)
+    lrc.fit(x_train, y_train)
+
+    y_train_preds_rf = cv_rfc.best_estimator_.predict(x_train)
+    y_test_preds_rf = cv_rfc.best_estimator_.predict(x_test)
+
+    y_train_preds_lr = lrc.predict(x_train)
+    y_test_preds_lr = lrc.predict(x_test)
+    classification_report_image(y_train,
+                                y_test,
+                                y_train_preds_lr,
+                                y_train_preds_rf,
+                                y_test_preds_lr,
+                                y_test_preds_rf)
+    feature_importance_plot(cv_rfc, x_test, "images/results")
+
+    joblib.dump(cv_rfc.best_estimator_, "models/randomforest_model.pkl")
+    joblib.dump(lrc, "models/logisticRegression_model.pkl")
 
 
 def main():
+    """
+    Loads data, performs feature engineering, train using Random forest and
+    Logistic regressions and prints results
+    """
     pth = "./data/bank_data.csv"
-    df = import_data(pth)
-    perform_eda(df)
+    data_frame = import_data(pth)
+    perform_eda(data_frame)
     cat_columns = [
-    'Gender',
-    'Education_Level',
-    'Marital_Status',
-    'Income_Category',
-    'Card_Category'                
-]
-    df= encoder_helper(df,cat_columns)
-    print(df["Education_Level_Churn"])
-    x_train,x_test,y_train,y_test=perform_feature_engineering(df)
-
+        'Gender',
+        'Education_Level',
+        'Marital_Status',
+        'Income_Category',
+        'Card_Category'
+    ]
+    data_frame = encoder_helper(data_frame, cat_columns)
+    print(data_frame["Education_Level_Churn"])
+    x_train, x_test, y_train, y_test = perform_feature_engineering(data_frame)
+    train_models(x_train, x_test, y_train, y_test)
 
 
 if __name__ == '__main__':
