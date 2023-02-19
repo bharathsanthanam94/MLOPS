@@ -3,7 +3,7 @@
 - Project **Predict Customer Churn** of ML DevOps Engineer Nanodegree Udacity
 
 ## Project Description
-- Predicts Churning customers using Random forest and Logistic regression models
+- Predicts Churning customers using Random forest and Logistic regression models.
 - Follows clean code principles adhering PEP8 standards and used Pylint tool.
 - Test cases are implemented using pytest
 
