@@ -17,10 +17,21 @@
     - `churn_notebook.ipynb`
 
 ## Running Files
-- Requires python 3.8 and install dependencies using `pip install -r requirements_py3.8.txt`
-- To run the project, execute the python script as `churn_library.py` as `python3 churn_library.py`from the project directory
+- Requires python 3.8 and install dependencies using 
+```
+pip install -r requirements_py3.8.txt
+```
+- To run the project(training), execute the python script  `churn_library.py` from the project directory as
+ ```
+ python3 churn_library.py
+ ```
+
 - The tests are written using `pytest` package
-- To run the test scripts, execute `pytest test_churn_library.py` from the project directory. This will run tests, and save log files in the `logs` diretory
+- To run the test scripts, execute the script `test_churn_library.py `from the project directory as 
+```
+pytest test_churn_library.py
+``` 
+This will run tests, and save log files in the `logs` diretory
 
 
 
