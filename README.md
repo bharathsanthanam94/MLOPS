@@ -8,14 +8,19 @@
 - Test cases are implemented using pytest
 
 ## Files and data description
-- To train the model run churn_library.py 
-- To run the test cases run test_churn_library.py
-- The dataset is available in the \data directory
+- Dataset is contained in the `data` directory in csv format
+- The directory `images` contains the results of exploratory data analysis and results.
+- The directory `logs` contains status of test cases and the errors.
+- Project files
+    - `churn_library.py`
+    - `test_churn_library.py`
+    - `churn_notebook.ipynb`
 
 ## Running Files
-- Install dependencies using pip install -r requirements_py3.8.txt
-- churn_library.py file will save results in images directory
-- test_churn_library will save test, and save logs in the logs diretory
+- Requires python 3.8 and install dependencies using `pip install -r requirements_py3.8.txt`
+- To run the project, execute the python script as `churn_library.py` as `python3 churn_library.py`from the project directory
+- The tests are written using `pytest` package
+- To run the test scripts, execute `pytest test_churn_library.py` from the project directory. This will run tests, and save log files in the `logs` diretory
 
 
 

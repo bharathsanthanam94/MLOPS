@@ -1,6 +1,10 @@
 # library doc string
 """
-This module predicts customer who are likely to churn based on the input features.
+This module predicts customer who are likely to churn
+based on the input features.
+
+Author: Bharath Santhanam
+Date: 19/2/2023
 """
 
 # import libraries
@@ -12,7 +16,7 @@ from sklearn.model_selection import train_test_split
 from sklearn.linear_model import LogisticRegression
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.model_selection import GridSearchCV
-from sklearn.metrics import classification_report
+from sklearn.metrics import plot_roc_curve, classification_report
 import numpy as np
 import joblib
 
@@ -40,7 +44,7 @@ def perform_eda(data_frame):
     """
     perform eda on df and save figures to images folder
     input:
-            df: pandas dataframe
+            data_frame: pandas dataframe
 
     output:
             None
@@ -74,7 +78,7 @@ def encoder_helper(data_frame, category_lst):
     propotion of churn for each category - associated with cell 15 from the notebook
 
     input:
-            df: pandas dataframe
+            data_frame: pandas dataframe
             category_lst: list of columns that contain categorical features
             response: string of response name [optional argument that could be
             used for naming variables or index y column]
@@ -95,7 +99,7 @@ def encoder_helper(data_frame, category_lst):
 def perform_feature_engineering(data_frame):
     """
     input:
-              df: pandas dataframe
+              data_frame: pandas dataframe
               response: string of response name [optional argument that
               could be used for naming variables or index y column]
 
@@ -167,24 +171,6 @@ def classification_report_image(
     data["train_lr"] = ["train_results_logistic_regression", y_train, y_train_preds_lr]
     data["test_lr"] = ["test_results_logistic_regression", y_test, y_test_preds_lr]
     for result_title, results_data in data.items():
-        # Set the default size of figures to [5,5]
-        # plt.rc("figure", figsize=(5, 5))
-        # # print the title
-        # plt.text(
-        #     0.01,
-        #     1.25,
-        #     str(results_data[0]),
-        #     {"fontsize": 10},
-        #     fontproperties="monospace",
-        # )
-        # # print the classificaiton results
-        # plt.text(
-        #     0.01,
-        #     0.05,
-        #     str(classification_report(results_data[1], results_data[2])),
-        #     {"fontsize": 10},
-        #     fontproperties="monospace",
-        # )
         fig, ax = plt.subplots(figsize=(8, 8))
         ax.text(
             0.05,
@@ -236,7 +222,7 @@ def feature_importance_plot(model, X_data, output_pth):
     plt.bar(range(X_data.shape[1]), importances[indices])
     # Add feature names as x-axis labels
     plt.xticks(range(X_data.shape[1]), names, rotation=90)
-    plt.savefig(output_pth + "Feature_Importance.jpg")
+    plt.savefig(os.path.join(output_pth, "Feature_Importance.jpg"), bbox_inches="tight")
     plt.close()
 
 
@@ -277,6 +263,15 @@ def train_models(x_train, x_test, y_train, y_test):
         y_test_preds_rf,
     )
     feature_importance_plot(cv_rfc, x_test, "images/results")
+    # Plot ROC curves
+    plt.figure(figsize=(15, 8))
+    axis = plt.gca()
+    # Plot ROC curve for RFC
+    plot_roc_curve(cv_rfc.best_estimator_, x_test, y_test, ax=axis, alpha=0.8)
+    # Plot ROC curve for LR
+    plot_roc_curve(lrc, x_test, y_test, ax=axis, alpha=0.8)
+    plt.savefig(os.path.join("images/results", "ROC_curves.jpg"))
+    plt.close()
 
     joblib.dump(cv_rfc.best_estimator_, "models/randomforest_model.pkl")
     joblib.dump(lrc, "models/logisticRegression_model.pkl")

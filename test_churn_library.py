@@ -1,5 +1,15 @@
 """
 Runs test for churn_library.py and logs info and error
+
+This module is used to test the following functions in churn_library.py
+1. import data
+2. perform data
+3. encode data
+4. perform_feature_engineering
+5. train_test_model
+
+Author: Bharath Santhanam
+Date: 19/2/2023
 """
 import os
 import logging
@@ -35,6 +45,11 @@ def test_data(test_dataframe):
     """
     Check if the dataframe imported has actual data in it, that is
     the shape of rows and columns should be greater than Zero
+    
+    input:
+            test_dataframe: pandas dataframe
+    output:
+            none
     """
     try:
         assert test_dataframe.shape[0] > 0
@@ -49,6 +64,10 @@ def test_eda(test_dataframe):
     """
     test perform_eda function: Ensure the images from exploratory data analysis
     are stored in the directory
+    input:
+            test_dataframe: pandas dataframe
+    output:
+            none
     """
     column_names_list = [
         "Churn",
@@ -70,6 +89,11 @@ def test_eda(test_dataframe):
 def test_encoder_helper(test_dataframe):
     """
     test encoder_helper function: check if the new encoded columns are valid and not NULL
+    input:
+            test_dataframe: pandas dataframe
+    output:
+            none
+    
     """
     cat_columns = [
         "Gender",
@@ -106,6 +130,10 @@ def test_encoder_helper(test_dataframe):
 def test_perform_feature_engineering(test_dataframe):
     """
     Test: test the function perform_feature_engineering
+    input:
+            test_dataframe: pandas dataframe
+    output:
+            none
     """
     cat_columns = [
         "Gender",
@@ -130,6 +158,10 @@ def test_perform_feature_engineering(test_dataframe):
 def test_train_models(test_dataframe):
     """
     test train_models
+    input:
+            test_dataframe: pandas dataframe
+    output:
+            none
     """
     # check if the training is completed successfully
     cat_columns = [
