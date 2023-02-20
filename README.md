@@ -25,7 +25,7 @@ pip install -r requirements_py3.8.txt
  ```
  python3 churn_library.py
  ```
-
+- This will run the model and save the results in the `images` directory
 - The tests are written using `pytest` package
 - To run the test scripts, execute the script `test_churn_library.py `from the project directory as 
 ```
